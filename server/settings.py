@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "posts",
     "menu_app",
     "air_one",
+    "online_store",
 ]
 
 

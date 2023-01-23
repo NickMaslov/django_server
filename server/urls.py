@@ -31,4 +31,5 @@ urlpatterns = [
     path("api/posts/", include("posts.urls")),
     path("api/menu_app/", include("menu_app.urls")),
     path("api/air_one/", include("air_one.urls")),
+    path("api/online_store/", include("online_store.urls")),
 ]
