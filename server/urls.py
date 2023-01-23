@@ -30,4 +30,5 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
     path("api/posts/", include("posts.urls")),
     path("api/menu_app/", include("menu_app.urls")),
+    path("api/air_one/", include("air_one.urls")),
 ]
