@@ -1,5 +1,10 @@
+import json
+import stripe
 from django.shortcuts import render
 from rest_framework import generics
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.conf import settings
 from . import serializers, models
 
 
@@ -11,3 +16,86 @@ class PlaceList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+
+class PlaceDetail(generics.RetrieveUpdateDestroyAPIView):
+    # permission_classes = [permissions.IsOwnerOrReadOnly]
+    serializer_class = serializers.PlaceDetailSerializer
+    queryset = models.Place.objects.all()
+
+
+class CategoryList(generics.CreateAPIView):
+    # permission_classes = [permissions.PlaceOwnerOrReadOnly]
+    serializer_class = serializers.CategorySerializer
+
+
+class CategoryDetail(generics.UpdateAPIView, generics.DestroyAPIView):
+    # permission_classes = [permissions.PlaceOwnerOrReadOnly]
+    serializer_class = serializers.CategorySerializer
+    queryset = models.Category.objects.all()
+
+
+class MenuItemList(generics.CreateAPIView):
+    # permission_classes = [permissions.PlaceOwnerOrReadOnly]
+    serializer_class = serializers.MenuItemSerializer
+
+
+class MenuItemDetail(generics.UpdateAPIView, generics.DestroyAPIView):
+    # permission_classes = [permissions.PlaceOwnerOrReadOnly]
+    serializer_class = serializers.MenuItemSerializer
+    queryset = models.MenuItem.objects.all()
+
+
+# print(settings.STRIPE_API_SECRET_KEY)# v3->v5
+# https://stripe.com/docs/api?lang=python
+stripe.api_key = settings.STRIPE_API_SECRET_KEY
+
+
+@csrf_exempt
+def create_payment_intent(request):
+    try:
+        data = json.loads(request.body)
+        intent = stripe.PaymentIntent.create(
+            amount=data["amount"] * 100,
+            currency="usd",
+            payment_method=data["payment_method"]["id"],
+            off_session=True,
+            confirm=True,
+        )
+
+        order = models.Order.objects.create(
+            place_id=data["place"],
+            table=data["table"],
+            detail=json.dumps(data["detail"]),
+            amount=data["amount"],
+            payment_intent=intent["id"],
+        )
+
+        return JsonResponse(
+            {
+                "success": True,
+                "order": order.id,
+            }
+        )
+    except Exception as e:
+        return JsonResponse(
+            {
+                "success": False,
+                "error": str(e),
+            }
+        )
+
+
+class OrderList(generics.ListAPIView):
+    serializer_class = serializers.OrderSerializer
+
+    def get_queryset(self):
+        return models.Order.objects.filter(
+            place__owner_id=self.request.user.id, place_id=self.request.GET.get("place")
+        )
+
+
+class OrderDetail(generics.UpdateAPIView):
+    # permission_classes = [permissions.PlaceOwnerOrReadOnly]
+    serializer_class = serializers.OrderSerializer
+    queryset = models.Order.objects.all()
