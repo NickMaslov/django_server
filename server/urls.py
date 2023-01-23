@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 # from rest_framework import routers
 from .quickstart import views
 
@@ -22,9 +23,14 @@ from .quickstart import views
 # router.register(r"users", views.UserViewSet)
 # router.register(r"groups", views.GroupViewSet)
 
+from posts import views
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     # path("menu_app", include("menu_app.urls")),
     # path("", include(router.urls)),
-    # path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    path("api/posts", views.PostList.as_view()),
+    path("api/posts/<int:pk>", views.PostRetrieveDestroy.as_view()),
+    path("api/posts/<int:pk>/vote", views.VoteCreate.as_view()),
 ]
