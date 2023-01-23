@@ -10,10 +10,9 @@ class ProductList(generics.ListCreateAPIView):
         query = self.request.query_params.get("keyword")
         if query == None:
             query = ""
-        products = models.Product.objects.filter(name__icontains=query)
-        # .order_by(
-        #     "-createdAt"
-        # )
+        products = models.Product.objects.filter(name__icontains=query).order_by(
+            "-createdAt"
+        )
         return products
 
     def perform_create(self, serializer):
