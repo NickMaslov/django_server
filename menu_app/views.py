@@ -1,3 +1,10 @@
 from django.shortcuts import render
+from rest_framework import generics
+from . import serializers
 
-# Create your views here.
+
+class PlaceList(generics.ListAPIView):
+    serializer_class = serializers.PlaceSerializer
+
+    def get_queryset(self):
+        return []
