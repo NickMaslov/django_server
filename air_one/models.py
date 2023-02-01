@@ -59,7 +59,7 @@ class Plane(models.Model):
 
 class Route(models.Model):
     name = models.CharField(max_length=50, unique=True, verbose_name="Route name")
-    travel_times = models.PositiveSmallIntegerField(verbose_name="Travel Time")
+    travel_times = models.PositiveSmallIntegerField(verbose_name="Total Travel Time")
     from_city = models.ForeignKey(
         City,
         on_delete=models.CASCADE,
