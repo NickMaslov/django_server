@@ -8,7 +8,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200, null=True, blank=True)
     # image = models.ImageField(null=True, blank=True, default="/placeholder.png")
     # or url ? from cloudinary
-    # blank -> null -> default priority s?
+    # blank -> null -> default priority ?
     image = models.CharField(max_length=200, default="/placeholder.png")
     brand = models.CharField(max_length=200, null=True, blank=True)
     category = models.CharField(max_length=200, null=True, blank=True)
